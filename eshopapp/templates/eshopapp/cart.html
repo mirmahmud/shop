@@ -1,0 +1,163 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Icon -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+          integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@700&family=Poppins:wght@600&family=Zen+Dots&display=swap"
+          rel="stylesheet">
+    <title>Ramziddin Aka</title>
+    <link rel="stylesheet" href="{% static 'cart/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'cart/css/bootstrap.css' %}">
+</head>
+<body>
+<section>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand fs-2" href="#"><h2>tarlet</h2></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto  mb-lg-0 left">
+                    <li class="nav-item">
+                        <a class="nav-link active fs-5 m-2" aria-current="page" href="#">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active fs-5 m-2" aria-current="page" href="#">Jurnal</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active fs-5 m-2" aria-current="page" href="#">Abote us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active fs-5 m-2" aria-current="page" href="#">Contact</a>
+                    </li>
+                </ul>
+                <div>
+                    <i class="fas fa-search fa-2x"></i>
+                    <i class="fas fa-shopping-bag fa-2x icon"></i>
+                    <i class="fas fa-align-left fa-2x icon"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+</section>
+<!-- Card -->
+<div class="container">
+    <div class="row d-flex">
+        <div class="col-9 mt-6">
+            <h3 class="mt-5"><span>Shopping Cart</span><br><span>  Product type  {{request.session.cart|length}}</span></h3>
+            
+            <div class="table mt-5 row d-flex border-bottom">
+                <h5 class="col-2">Product<span></h5>
+                <h5 class="col-2">Price<span></h5>
+                <h5 class="col-2">Photo</h5>
+                <h5 class="col-3">Quantity</h5>
+                <h5 class="col-3">Total Price</h5>
+            </div>
+
+            {% load cart_tag %}
+            
+            {% for key,item in request.session.cart.items %}
+            
+     
+            <div class="row d-flex mt-5">
+                <div class="border-0 d-flex col-2">
+                    <div class="col-6">
+                        <h6 class="">{{item.name}}</h6>   
+                    </div>
+                </div>
+                <div class="div col-2 mt-2">
+                    <p class="">{{item.price}}</p>
+                </div>
+                <div class="div col-2 mt-2">
+                    <img src="{{ item.image }}" class="size" alt="Sumka">
+                </div>
+                <div class="col-3">
+                    <div class="row-1 col-4 mt-2">
+                        <div class="right-i">
+                            <a href="{% url 'item_decrement' item.product_id %}">
+                                <button class="btn btn-light btn-sm minus">➖</button>
+                            </a>
+                        </div>
+                        <h3 id="value">{{item.quantity}}</h3>
+                        <div class="left-i">
+                            <a href="{% url 'item_increment' item.product_id %}">
+                                <button class="btn btn-light btn-sm plus">➕</button>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="col-3 row d-flex mt-2">
+                    <h5 class="col-6">${{ item.price|multiply:item.quantity }}</h5>
+                    <div class="col-6">
+                        <a href="{% url 'item_clear' item.product_id %}">
+                            <button class="btn btn-danger btn-sm float-right delete">X</button>
+                        </a>
+                    </div>
+                </div>
+
+                
+            </div>
+            {% endfor %}
+            
+            <div class="row d-flex">
+                <div class="col-8"></div>
+                <div class="col-4 row d-flex mt-3 border-bottom">
+                    <div class="col-6">
+                        <h6 class="mt-2">Quantity</h6>
+                        <h6 class="mt-2">Total</h6>
+                    </div>
+                    <div class="col-6">
+                        <h5></h5>
+                        <h5></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="row d-flex mt-5">
+                <div class="col-8"><h3>Continue Shopping</h3></div>
+                <div class="col-2"><h4>Total</h4> </div>
+                <div class="col-2"><h3></h3></div>
+            </div>
+        </div>
+        <div class="col-3 mt-5 bg-light rounded">
+            <h3 class="mt-4"><span>Sending Order</span></h3>
+            <div class="div">
+                <form action="{% url 'order_create' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="name">{{ user.username }}</div>
+                    <div class="e-mail">{{ user.email }}</div>
+                    <label for="manzil"></label>
+                    <input name="address" class="form-control mt-5" type="text" id="manzil" placeholder="20, Amir Temur street">
+                    <label for="city"></label>
+                    <input name="city" class="form-control" type="text" placeholder="Tashkent" id="city">
+                    <label for="postal_code"></label>
+                    <input name="postal_code" class="form-control"  type="number" id="phone" placeholder="110001"><br>
+                    <button type="submit" class="ms-3 mt-5 btn btn-primary py-2 px-3 btn-outline-primary text-white">Sending Order</button>
+                </form>
+               
+            </div>
+        </div>
+    </div>
+</div>
+<!-- JavaScript Bootstrap -->
+<section>
+    <script src="static/cart/js/jquery.js"></script>
+    <script src="static/cart/js/popper.min.js"></script>
+    <script src="static/cart/js/bootstrap.js"></script>
+    <script src="static/cart/js/app.js"></script>
+</section>
+</body>
+</html>
